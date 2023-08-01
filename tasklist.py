@@ -11,3 +11,11 @@ class TaskList:
 
   def clear(self):
     self.list.clear()
+
+  def printList():
+    print("\nTODO List:\n")
+    if (len(self.list) == 0):
+      print("EMPTY LIST")
+      return
+    for index, task in enumerate(self.list):
+      print(f"{index}. {task}")

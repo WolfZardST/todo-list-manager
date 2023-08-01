@@ -3,7 +3,7 @@ class Task:
   def __init__(self, title, description, completed, person):
     self.title = title
     self.description = description
-    self.completed = False
+    self.completed = completed
     self.person = person
 
   def complete(self):

@@ -6,15 +6,6 @@ import os, sys
 toDOList = TaskList()
 
 
-def printList():
-  print("\nTODO List:\n")
-  if(len(toDOList.list) == 0):
-    print("EMPTY LIST")
-    return
-  for index, task in enumerate(toDOList.list):
-    print(f"{index}. {task}")
-
-
 def createTask():
   title = input("Write the title: ")
   description = input("Write the description: ")
