@@ -12,7 +12,7 @@ class TaskList:
   def clear(self):
     self.list.clear()
 
-  def printList():
+  def printList(self):
     print("\nTODO List:\n")
     if (len(self.list) == 0):
       print("EMPTY LIST")

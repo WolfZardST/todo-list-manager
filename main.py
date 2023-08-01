@@ -6,6 +6,9 @@ import os, sys
 toDOList = TaskList()
 
 
+def printList():
+  toDOList.printList()
+
 def createTask():
   title = input("Write the title: ")
   description = input("Write the description: ")

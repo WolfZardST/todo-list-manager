@@ -22,7 +22,7 @@ Scenario: Mark a task as complete
 Scenario: List all tasks in the to-do list 
   Given the to-do list contains tasks "Buy groceries" 
   When the user lists all tasks 
-  Then the output should contain """[ ] Buy groceries"""
+  Then the output should contain "Buy groceries"
 
 @removeTask
 Scenario: Remove a task from the to-do list
@@ -31,3 +31,15 @@ Scenario: Remove a task from the to-do list
   When the user removes the task with title "Finish Workshop" at a certain position
   Then the to-do list no longer contains the task with the title "Finish Workshop" in the specified position
   And the to-do list length has decreased by 1
+
+@seeDetails
+Scenario: See the details of a specific task from the to-do list
+  Given the to-do list contains a task with title "Push Commits" description "Push all the commits made to the repo" and person "Erwing" at position 0
+  When the user prints the details of the task at position 0
+  Then the details output should be "\nTitle: Push Commits\nDescription: Push all the commits made to the repo\nPerson: Erwing"
+
+@printEmptyList
+Scenario: When the list is empty and the user wants to print the list, show a empty print
+  Given an empty to-do list
+  When the user prints the list
+  Then the output should be "EMPTY LIST"

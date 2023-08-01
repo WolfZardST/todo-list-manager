@@ -1,9 +1,12 @@
+import io
 from task import Task
 from tasklist import TaskList
 from behave import given, then, when, step
+import sys
 
 to_do_list = TaskList()
 task = None
+capturedOutput = None
 
 @given('the to-do list is empty')
 def setp_impl(context):
@@ -70,18 +73,29 @@ def setp_impl(context, title):
 
 @when('the user lists all tasks')
 def step_impl(context):
+  global captured_output
+  captured_output = io.StringIO()
+  sys.stdout = captured_output
+  to_do_list.printList()
+  sys.output = sys.__stdout__
+
+@then('the output should contain "{expected_output}"')
+def step_impl(context, expected_output):
+  global captured_output
+  assert expected_output.strip() in captured_output.getvalue().strip(), 'Task not found in list'
   
 
 @given('the to-do list contains a task with the title "{title}" at a certain position')
 def setp_impl(context, title):
+  to_do_list.clear()
   taskOne = Task("Read Suggested Reading", "", False, "Benjamin Dunes")
   taskTwo = Task(title, "", False, "Benjamin Dunes")
   to_do_list.addTask(taskOne)
   to_do_list.addTask(taskTwo)
 
-@and('the to-do list has a length greater than or equal to 1')
+@step('the to-do list has a length greater than or equal to 1')
 def setp_impl(context):
-  assert len(to_do_list.list) >= 1, "The to-do list contains at least one item"
+  assert len(to_do_list.list) >= 1, "The to-do list does not contain at least one item"
 
 @when('the user removes the task with title "{title}" at a certain position')
 def setp_impl(context, title):
@@ -92,8 +106,52 @@ def setp_impl(context, title):
 @then('the to-do list no longer contains the task with the title "{title}" in the specified position')
 def setp_impl(context, title):
   taskStillExists = False
-  if(len(to_do_list.list > 1)):
+  if(len(to_do_list.list) > 1):
     task = to_do_list.list[1]
     if(task.title == title):
       taskStillExists = True
-  assert !taskStillExists, ""
+  assert not taskStillExists, "Task not removed from the to-do list"
+
+@step('the to-do list length has decreased by 1')
+def setp_impl(context):
+  assert len(to_do_list.list) == 1, "The to-do list length did not decreased correctly"
+
+
+@given('the to-do list contains a task with title "{title}" description "{description}" and person "{person}" at position {index}')
+def setp_impl(context, title, description, person, index):
+  to_do_list.clear()
+  task = Task(title, description, False, person)
+  to_do_list.addTask(task)
+
+@when('the user prints the details of the task at position {index}')
+def setp_impl(context, index):
+  global capturedOutput
+  task = to_do_list.list[int(index)]
+  capturedOutput = io.StringIO()
+  sys.stdout = capturedOutput
+  print(task.details())                                  
+  sys.stdout = sys.__stdout__ 
+
+@then('the details output should be "{expectedOutput}"')
+def setp_impl(context, expectedOutput):
+  global capturedOutput
+  expectedOutput = expectedOutput.replace('\\n', '\n')
+  assert capturedOutput.getvalue().strip() == expectedOutput.strip(), 'Incorrect details printed'
+
+
+@given('an empty to-do list')
+def setp_impl(context):
+  to_do_list.clear()
+
+@when('the user prints the list')
+def setp_impl(context):
+  global capturedOutput
+  capturedOutput = io.StringIO()
+  sys.stdout = capturedOutput
+  to_do_list.printList()
+  sys.stdout = sys.__stdout__ 
+
+@then('the output should be EMPTY LIST')
+def setp_impl(context):
+  global capturedOutput
+  assert capturedOutput.getvalue().strip() == "EMPTY LIST", 'Output is not EMPTY LIST'
